@@ -1,4 +1,6 @@
 pip install tensorflow opencv-python streamlit standard-imghdr
-cd Desktop
+cd Downloads
+tar -xf SnapAI-main.zip
+cd SnapAI-main
 python -m streamlit run app.py
 dir
