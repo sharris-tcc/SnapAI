@@ -1,11 +1,11 @@
 start https://github.com/sharris-tcc/Connections_Game/archive/refs/heads/main.zip
 cd Downloads
+tar -xf SnapAI-main.zip
 tar -xf Connections_Game-main.zip
 cd Connections_Game-main
 start Connections.html
 pip install tensorflow opencv-python streamlit standard-imghdr
 cd..
-tar -xf SnapAI-main.zip
 cd SnapAI-main
 python -m streamlit run app.py
 echo.
