@@ -8,4 +8,4 @@ pip install tensorflow opencv-python streamlit standard-imghdr
 cd..
 cd SnapAI-main
 python -m streamlit run app.py
-echo.
+test@test.com
