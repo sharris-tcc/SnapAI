@@ -1,4 +1,4 @@
-pip install tensorflow opencv-python streamlit
+pip install tensorflow opencv-python streamlit standard-imghdr
 cd Desktop
 python -m streamlit run app.py
 dir
