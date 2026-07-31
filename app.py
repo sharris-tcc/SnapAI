@@ -13,6 +13,8 @@ import random
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Rescaling
 from keras.utils import image_dataset_from_directory
+import re
+from pathlib import Path
 
 
 # Initialize session state for modal status
@@ -155,7 +157,9 @@ if button1:
                 image_path = os.path.join(data_dir, image_class, image)
                 try:
                     img = cv2.imread(image_path)
-                    tip = imghdr.what(image_path)
+                    with Image.open(image_path) as img:
+                        img.load()              # Fully decode the image
+                        tip = img.format.lower()  # "jpeg", "png", "bmp", etc.
                     if tip not in image_exts:
                         print('Image not in ext list {}'.format(image_path))
                         os.remove(image_path)
@@ -317,7 +321,9 @@ if button3:
                         image_path = os.path.join(dataDir, image_class, image)
                         try:
                             img = cv2.imread(image_path)
-                            tip = imghdr.what(image_path)
+                            with Image.open(image_path) as img:
+                                img.load()              # Fully decode the image
+                                tip = img.format.lower()  # "jpeg", "png", "bmp", etc.
                             if tip in image_exts:
                                 dst_folder = "test_images"
                                 os.makedirs(testImageDir, exist_ok=True)
@@ -366,6 +372,7 @@ if button4:
 data_dir = 'data/'
 zip_dir = 'zipFiles/'
 if uploaded_file is not None:
+    image_exts = ['jpeg', 'jpg', 'bmp', 'png']
     if uploaded_file.name.lower().endswith(".zip") and not(os.path.isdir(data_dir + str(os.path.splitext(uploaded_file.name)[0]))):
         extract_to = data_dir + str(os.path.splitext(uploaded_file.name)[0])
 
@@ -379,6 +386,14 @@ if uploaded_file is not None:
         # Unzip the file
         with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
             zip_ref.extractall(extract_to)
+        
+        MIN_SIZE = 1024  # 1 KB
+
+        for file in Path(data_dir).rglob("*"):
+            if file.is_file() and file.suffix.lower() in image_exts:
+                if file.stat().st_size < MIN_SIZE:
+                    print(f"Deleting tiny file: {file}")
+                    os.remove(file)
 
         image_exts = ['jpeg', 'jpg', 'bmp', 'png']
         for image_class in os.listdir(data_dir):
@@ -398,10 +413,10 @@ if uploaded_file is not None:
                     # Verify this is a real image
                     try:
                         with Image.open(image_path) as img:
-                            img.verify()   # Raises an exception if the file is not a valid image
+                            img.load()   # Raises an exception if the file is not a valid image
                     except Exception:
                         print(f"Skipping invalid image: {image_path}")
-                        #os.remove(image_path)          # or continue if you don't want to delete it
+                        os.remove(image_path)          # or continue if you don't want to delete it
                         continue
                     for x in range(2):
                         image_path = os.path.join(data_dir, image_class, image)
@@ -416,12 +431,14 @@ if uploaded_file is not None:
                         if testImageCount > 6:
                             isTestImage = False
                         
-                        if not(isTestImage):
+                        if not(isTestImage) and os.path.exists(oldImagePath):
                             shutil.copy(oldImagePath, newImagePath)
                         
                         try:
                             img = cv2.imread(image_path)
-                            tip = imghdr.what(image_path)
+                            with Image.open(image_path) as img:
+                                img.load()              # Fully decode the image
+                                tip = img.format.lower()  # "jpeg", "png", "bmp", etc.
                             if tip in image_exts and imageNotFound:
                                 dst_folder = "test_images/"
                                 os.makedirs(dst_folder, exist_ok=True)
