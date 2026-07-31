@@ -388,6 +388,21 @@ if uploaded_file is not None:
                 testImageCount = 0
                 count = 0
                 for image in os.listdir(os.path.join(data_dir, image_class)):
+                    SAFE_FILENAME = re.compile(r'^[A-Za-z0-9 _().-]+$')
+
+                    if not SAFE_FILENAME.match(image):
+                        print(f"Skipping invalid filename: {image}")
+                        continue
+                    image_path = os.path.join(data_dir, image_class, image)
+                        
+                    # Verify this is a real image
+                    try:
+                        with Image.open(image_path) as img:
+                            img.verify()   # Raises an exception if the file is not a valid image
+                    except Exception:
+                        print(f"Skipping invalid image: {image_path}")
+                        #os.remove(image_path)          # or continue if you don't want to delete it
+                        continue
                     for x in range(2):
                         image_path = os.path.join(data_dir, image_class, image)
                         
