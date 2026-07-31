@@ -451,3 +451,8 @@ if uploaded_file is not None:
                                     break
                         except Exception as e:
                             message = 'Issue with image {}'.format(image_path)
+                            
+                            
+    st.success('Upload Complete!')
+                            
+            
