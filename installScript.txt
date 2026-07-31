@@ -3,4 +3,4 @@ cd Downloads
 tar -xf SnapAI-main.zip
 cd SnapAI-main
 python -m streamlit run app.py
-dir
+echo.
